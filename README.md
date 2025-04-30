@@ -1,6 +1,6 @@
 # Introduction
 
-biSTAR integrates feature decoupling and multi-task learning to extract domain-invariant features, enabling simultaneous single-cell pseudo-spatial reconstruction and cell-type deconvolution for both single-cell and spatial transcriptomic data.	
+SpaDicer is a deep learning framework that unifies single-cell RNA sequencing and spatial transcriptomics data, combining pseudo-spatial reconstruction and cell-type deconvolution to enhance spatial localization and cell-type composition analysis of complex tissue.	
 
 # Model architecture
 
