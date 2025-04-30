@@ -1,12 +1,16 @@
+import argparse
+
 import numpy as np
 import pandas as pd
 import scanpy as sc
 from sklearn.cluster import KMeans
 from scipy import stats
 
-def preporcess(
+def preprocess(
         sc_adata,
         st_adata,
+        output_sc_csv_path: str,
+        output_st_csv_path: str,
         st_type: str = 'spot',
         n_features: int = 2000,
         normalize: bool = True,
@@ -63,9 +67,10 @@ def preporcess(
 
     sc_adata = sc_adata[:, list(inter_gene)]
     st_adata = st_adata[:, list(inter_gene)]
-
+    # Save processed data to CSV
+    sc_adata.to_csv(output_sc_csv_path)
+    st_adata.to_csv(output_st_csv_path)
     print('Data have been pre-processed.')
-    return sc_adata, st_adata
 
 
 
@@ -199,3 +204,50 @@ def calculate_differential_genes(expression_data, annotations, n_top_genes=50):
 
     return results_dict
 
+
+def main():
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description="Preprocess scRNA-seq and spatial transcriptomics data.")
+
+    # Arguments for scRNA-seq and spatial transcriptomics data paths
+    parser.add_argument('--sc_data', type=str, required=True, help="Path to the scRNA-seq data file.")
+    parser.add_argument('--sc_meta', type=str, required=True, help="Path to the scRNA-seq metadata file.")
+    parser.add_argument('--st_data', type=str, required=True, help="Path to the spatial transcriptomics data file.")
+    parser.add_argument('--st_meta', type=str, required=True, help="Path to the spatial transcriptomics metadata file.")
+    parser.add_argument('--output_sc_csv_path', type=str, required=True, help="Path to the scRNA-seq data output file.")
+    parser.add_argument('--output_st_csv_path', type=str, required=True, help="Path to the spatial transcriptomics data output file.")
+    # Other arguments for preprocessing
+    parser.add_argument('--st_type', type=str, default='spot', choices=['spot', 'image'],
+                        help="Type of spatial transcriptomics data (spot or image).")
+    parser.add_argument('--n_features', type=int, default=2000, help="Number of highly variable genes to select.")
+    parser.add_argument('--normalize', action='store_true', help="Whether to normalize the data or not.")
+    parser.add_argument('--select_hvg', type=str, default='intersection', choices=['intersection', 'union'],
+                        help="Method for selecting highly variable genes: intersection or union.")
+
+    # Parse the arguments
+    args = parser.parse_args()
+
+    # Load the scRNA-seq and spatial transcriptomics data
+    sc_adata = sc.read(args.sc_data)
+    st_adata = sc.read(args.st_data)
+
+    # Load the metadata
+    sc_meta = pd.read_csv(args.sc_meta, index_col=0)
+    st_meta = pd.read_csv(args.st_meta, index_col=0)
+
+    # Call the preprocess function
+    preprocess(
+        sc_adata=sc_adata,
+        st_adata=st_adata,
+        output_sc_csv_path=args.output_sc_csv_path,
+        output_st_csv_path=args.output_st_csv_path,
+        st_type=args.st_type,
+        n_features=args.n_features,
+        normalize=args.normalize,
+        select_hvg=args.select_hvg
+    )
+
+
+
+if __name__ == "__main__":
+    main()

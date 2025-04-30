@@ -58,7 +58,7 @@ def train():
 
         return optimizer
     '''Loss Function and Optimization Function'''
-    optimizer = optim.Adam(model.parameters(), lr=config.lr, weight_decay=config.weight_decay)
+    optimizer = optim.Adam(model.parameters(), lr=config.lr, weight_decay=config.weiht_decay)
     loss_classification = torch.nn.CrossEntropyLoss()
     loss_recon1 = MSE()
     loss_fn = nn.MSELoss(reduction='mean')

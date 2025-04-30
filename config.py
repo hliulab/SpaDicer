@@ -16,7 +16,7 @@ cuda = True
 cudnn.benchmark = True
 lr = 1e-3
 n_epoch = 200
-batchsize=64
+ 
 step_decay_weight = 0.95
 lr_decay_step = 20000
 weight_decay = 1e-6
