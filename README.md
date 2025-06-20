@@ -37,6 +37,17 @@ The deep learning models were trained on 2*NVIDIA GeForce RTX 4090 on linux.
 
 `conda create --name <your_env_name> --file requirements.txt`
 
+
+# Directory structure
+
++ `model`: contains the code for the model, the evaluation.
++ `configs.py`: Configuration for hyperparameters.
++ `data`: This directory needs to be created by yourself to store experimental data and includes data preprocessing scripts.
++ `utils.py`:Tools and methods required for training or validation.
++ `train.py`:Training script.
++ `val.py`:validation script.
++ `dataset.py`:Load training and validation dataset scripts.
+
 # Usage
 
 First, you need to run the process.py script in the data directory to preprocess the single-cell RNA sequencing data and spatial transcriptome data.
@@ -55,15 +66,22 @@ python spatial_processing.py --sc_data ./STARmap/sc_data.csv --sc_meta ./STARmap
 - `--n_features`: Number of highly variable genes to select.
 - `--normalize`: Flag to normalize the data.
 - `--select_hvg`: Method to select highly variable genes, either `intersection` or `union`.
+  
+When dissecting intratumor heterogeneity of tumor tissues, it is necessary to perform clustering on SCC and BC by executing the following commands.
 
-To train this model and obtain results, you need to download the dataset (Example: Dataset10_STARmap), place it in the datasets folder, and then run:
-
+```shell
+python spatial_analysis.py cluster \
+    --expression_paths slice1_expr.csv slice2_expr.csv slice3_expr.csv \
+    --spatial_paths slice1_spatial.csv slice2_spatial.csv slice3_spatial.csv \
+    --output_paths slice1_clusters.csv slice2_clusters.csv slice3_clusters.csv \
+    --n_clusters 5
 ```
-python train.py
-python val.py
-```
 
-If you want to change the hyperparameters, you need to modify the `config.py` script.
+- `--expression_paths`: Three expression file paths separated by spaces.
+- `--spatial_paths`: Three spatial data file paths separated by spaces.
+- `--output_paths`: Three output file paths separated by spaces.
+
+To reproduce our experiments, you need to download the dataset (Example: HEART), and place it in the datasets folder. Next, you need to modify the `config.py` file to specify the path of dataset and change the hyperparameters as below:
 
 ```python
 inf = 610								# Input feature dimensions
@@ -72,18 +90,17 @@ lr = 1e-3								# Learning Rate
 n_epoch = 200							# The number of epochs
 batchsize=64							# The number of samples processed before the model’s internal parameters are updated. 					
 weight_decay = 1e-6						#  A regularization term added to the loss function to prevent overfitting by penalizing large weights.
-sc_data = r'./data/STARmap/sc_data.csv' # The path to the single-cell RNA-seq data file (in CSV format) used for training the model.
-sc_meta = r'./data/STARmap/sc_meta.csv' # The path to the metadata file for the single-cell RNA-seq data
-st_data = r'./data/STARmap/st_data.csv'	# The path to the spatial transcriptomics data file (in CSV format) used for training the model.
-st_meta = r'./data/STARmap/st_meta.csv'	# The path to the metadata file for the spatial transcriptomics data
+sc_data = r'./data/HEART/sc_data.csv' # The path to the single-cell RNA-seq data file (in CSV format) used for training the model.
+sc_meta = r'./data/HEART/sc_meta.csv' # The path to the metadata file for the single-cell RNA-seq data
+st_data = r'./data/HEART/st_data.csv'	# The path to the spatial transcriptomics data file (in CSV format) used for training the model.
+st_meta = r'./data/HEART/st_meta.csv'	# The path to the metadata file for the spatial transcriptomics data
 ```
 
-# Directory structure
+To train the model and evaluate its performance on the test set, please run the following commands:
+```shell
+python train.py
+python val.py
+```
 
-+ `model`: contains the code for the model, the evaluation.
-+ `configs.py`: Configuration for hyperparameters.
-+ `data`: This directory needs to be created by yourself to store experimental data and includes data preprocessing scripts.
-+ `utils.py`:Tools and methods required for training or validation.
-+ `train.py`:Training script.
-+ `val.py`:validation script.
-+ `dataset.py`:Load training and validation dataset scripts.
+
+
