@@ -20,7 +20,7 @@ The deep learning models were trained on 2*NVIDIA GeForce RTX 4090 on linux.
 # Installation Guide
 
 ```
-1.Clone the SSDA4Drug repository
+1.Clone the SpaDicer repository
 ```
 
 `git clone https://github.com/hliulab/SpaDicer.git`
